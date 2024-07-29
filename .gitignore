@@ -1,0 +1,7 @@
+**/__pycache__/**
+**.log
+LT4Code-main/all_data/
+LT4Code-main/API_seq_rec/CodeBERT/CE/model/codebert_epoch30_ce/
+LT4Code-main/API_seq_rec/CodeT5/CE/model/api_seq_rec_ep30/
+LT4Code-main/API_seq_rec/MulaRec/CE/dual-mularec-ce-epoch30/
+LT4Code-main/RQ4/Tail-detection/code/saved_models_api**/

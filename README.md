@@ -1,4 +1,5 @@
 # LT4Code
+自分が研究する用にリポジトリをコピーしたもの。詳細なREADME.mdは以下の通り。
 
 This repository is the replication package of the research work **"The Devil is in the Tails: How Long-Tailed Code Distributions Impact Large Language Models"**.
 
