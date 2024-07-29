@@ -16,7 +16,7 @@ RUN apt-get update && \
     apt-get install -y software-properties-common && \
     add-apt-repository ppa:deadsnakes/ppa && \
     apt-get update && \
-    apt-get install -y python3.8 python3.8-venv python3-pip git && \
+    apt-get install -y python3.8 python3.8-venv python3-pip git gosu && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -30,5 +30,13 @@ RUN pip install --no-cache-dir -r requirements.txt && \
     pip install torch==1.8.1+cu111 -f https://download.pytorch.org/whl/torch_stable.html && \
     pip install allennlp==2.4.0 && \
     pip install transformers==4.5.1
+
+# ホスト名設定スクリプトをコピー    これはホストOSのユーザ名とコンテナ側のユーザ名を一致させるためである
+# 開発環境がLinux OSのときのみ有効にする
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+# エントリーポイントを設定
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
 CMD ["bash"]
