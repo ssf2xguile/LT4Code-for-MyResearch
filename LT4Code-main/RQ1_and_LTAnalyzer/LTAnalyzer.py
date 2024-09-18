@@ -216,6 +216,8 @@ def calculate_label_freq(task, data_dir):
         vocab_samples = [i[1] for i in vocab.most_common(len(vocab))]
         total_smaple = sum(vocab_samples)
 
+        # APIメソッドの種類数を表示
+        print(f"APIメソッドの種類数: {len(vocab_tokens)}")
         label2label_num_dict = {}
         for i in range(len(vocab_tokens)):
             label2label_num_dict[vocab_tokens[i]] = i
