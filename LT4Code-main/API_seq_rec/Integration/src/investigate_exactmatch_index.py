@@ -36,7 +36,9 @@ def read_csv_file(file_path):
 
 def check_matching_lines(txt_lines, json_or_fixed_lines):
     matching_indices = []
-    for i, (txt_line, json_or_fixed_line) in enumerate(zip(txt_lines, json_or_fixed_lines)):
+    candidates = [c.split('\t')[0].strip().lower().replace(' ', '') for c in txt_lines]  # CodeBERTはビームサーチによって複数候補が生成されてしまうので、最初の候補のAPIメソッドシーケンスのみを比較対象とする
+    references = [r.strip().lower().replace(' ','') for r in json_or_fixed_lines]
+    for i, (txt_line, json_or_fixed_line) in enumerate(zip(candidates, references)):
         if txt_line == json_or_fixed_line:
             matching_indices.append(i + 1)  # 1-based index
     return matching_indices
