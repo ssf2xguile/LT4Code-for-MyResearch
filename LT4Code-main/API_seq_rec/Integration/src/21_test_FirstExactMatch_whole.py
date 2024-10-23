@@ -1,12 +1,15 @@
-"""
-調査用データに対して各モデルのAPIが何種類何回登場したのかをカウントするプログラム
-入力: 各モデルが予測したAPIシーケンスのファイル(CodeBERT_predictions.txt, CodeT5_predictions.txt, MulaRec_predictions.txt)と、元のテストデータのインデックスがついている調査用データ
-出力: jsonファイル
-"""
+# 17test_exactmatch_whole_byTargetInvestigate.pyとほとんど似ている。違うのはparse_string_into_apisの返り値が単一の文字列であるという点。
 import pandas as pd
 import argparse
 import json
 import os
+
+def compare_apimethod(model_preds, correct_refs):
+    correct_index = []
+    for index, (pred, ref) in enumerate(zip(model_preds, correct_refs)):
+        if pred == ref:
+            correct_index.append(index)
+    return correct_index
 
 def parse_string_into_apis(str_):   # 今回は小文字化と空白削除の処理を追加して、さらに最初の1個のAPIメソッドだけしか返さない。つまり、文字列が返ってくる。
     apis = []
@@ -41,29 +44,10 @@ def parse_string_into_apis(str_):   # 今回は小文字化と空白削除の処
     apis.append(api)
     return apis[0]  
 
-def recreate_apimethod_list(model_preds, original_index):
-    relevant_apimethod = []
-    for index in original_index:
-        relevant_apimethod.append(model_preds[int(index)-1])
-    return relevant_apimethod
-
-def aggregate_model_counts(codebert_apis, codet5_apis, mularec_apis):
-    all_apis = set(codebert_apis + codet5_apis + mularec_apis)
-    aggregated_data = []
-
-    for api in all_apis:
-        codebert_count = codebert_apis.count(api)
-        codet5_count = codet5_apis.count(api)
-        mularec_count = mularec_apis.count(api)
-
-        aggregated_data.append({
-            "api_method": api,
-            "CodeBERT_first_appearance_count": codebert_count,
-            "CodeT5_first_appearance_count": codet5_count,
-            "MulaRec_first_appearance_count": mularec_count
-        })
-
-    return aggregated_data
+def write_matching_indices(file_path, indices):
+    with open(file_path, 'w', encoding='utf-8') as file:
+        for index in indices:
+            file.write(f"{index}\n")
 
 def main():
     parser = argparse.ArgumentParser()
@@ -71,6 +55,7 @@ def main():
     parser.add_argument('--file2', type=str, default='../data/CodeT5_predictions.txt', help="Path to the test.json file")
     parser.add_argument('--file3', type=str, default='../data/MulaRec_predictions.txt', help="Path to save the output file")
     parser.add_argument('--investigate_file', type=str, default='../data/target_investigate.csv', help="Path to save the output file")
+    parser.add_argument('--task', type=str, default=None)
     parser.add_argument('--output_dir', type=str, default='../data/', help="Path to save the text file which including tail data")
     args = parser.parse_args()
 
@@ -84,21 +69,35 @@ def main():
 
     # 調査対象データに該当する予測結果のインデックスのリストを取り出す
     df = pd.read_csv(args.investigate_file)
+    correct_refs = df['target_api'].apply(parse_string_into_apis).tolist()  # この処理によってリストのリストが得られる[...,'base64.decodetoobject', 'math.sqrt', 'thread.start',...]
     original_index = df['api_index'].tolist()   # 元のテストデータの何番目のデータかを示すインデックス[..., 36149, 36154, ...]のようになる 
     
+    codebert_preds = []
+    codet5_preds = []
+    mularec_preds = []
+    for index in original_index:
+        codebert_preds.append(codebert_preds_file[int(index)-1])
+        codet5_preds.append(codet5_preds_file[int(index)-1])
+        mularec_preds.append(mularec_preds_file[int(index)-1])
+
     # 各モデルの正解数をカウントする
-    codebert_apis = recreate_apimethod_list(codebert_preds_file, original_index)
-    codet5_apis = recreate_apimethod_list(codet5_preds_file, original_index)
-    mularec_apis = recreate_apimethod_list(mularec_preds_file, original_index)
+    codebert_correct_index = compare_apimethod(codebert_preds, correct_refs)
+    codet5_correct_index = compare_apimethod(codet5_preds, correct_refs)
+    mularec_correct_index = compare_apimethod(mularec_preds, correct_refs)
 
-    # APIメソッドごとに各モデルの予測回数を集約
-    aggregated_data = aggregate_model_counts(codebert_apis, codet5_apis, mularec_apis)
-
-    # 集約結果をJSONファイルに保存
-    with open(os.path.join(args.output_dir, 'first_prediction_api.json'), 'w', encoding='utf-8') as outfile:
-        json.dump(aggregated_data, outfile, ensure_ascii=False, indent=4)
-
-    print("Aggregated data has been saved successfully.")
+    # 最終結果の出力
+    codebert_output_file = os.path.join(args.output_dir, f'CodeBERT_first_exactmatch_index.txt')
+    write_matching_indices(codebert_output_file, codebert_correct_index)
+    print(f"CodeBERT correct count data has been saved to {codebert_output_file}")
+    print(f"CodeBERT correct count: {len(codebert_correct_index)}")
+    codet5_output_file = os.path.join(args.output_dir, f'CodeT5_first_exactmatch_index.txt')
+    write_matching_indices(codet5_output_file, codet5_correct_index)
+    print(f"CodeT5 correct count data has been saved to {codet5_output_file}")
+    print(f"CodeT5 correct count: {len(codet5_correct_index)}")
+    mularec_output_file = os.path.join(args.output_dir, f'MulaRec_first_exactmatch_index.txt')
+    write_matching_indices(mularec_output_file, mularec_correct_index)
+    print(f"MulaRec correct count data has been saved to {mularec_output_file}")
+    print(f"MulaRec correct count: {len(mularec_correct_index)}")
 
 
 if __name__ == "__main__":
