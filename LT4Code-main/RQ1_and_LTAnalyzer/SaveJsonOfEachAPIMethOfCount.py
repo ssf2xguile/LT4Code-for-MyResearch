@@ -61,10 +61,10 @@ def calculate_label_freq(task, data_dir):
         # Determine the id up to which the top 50% API methods fall
         total_count = df['count'].sum()
         cumulative_count = df['count'].cumsum()
-        top_50_percent_index = (cumulative_count <= total_count * 0.5).sum() - 1
+        top_50_percent_index = (cumulative_count <= total_count * 0.3).sum() - 1
 
         # Print the id representing the top 50% API methods
-        print(f'The id up to which the top 50% of API methods are covered: {top_50_percent_index}')
+        print(f'The id up to which the top 30% of API methods are covered: {top_50_percent_index}')
 
         # Jsonファイルを保存する。初回のみ実行
         #output_file = './api_rec_data.json'
