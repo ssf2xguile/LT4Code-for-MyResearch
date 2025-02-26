@@ -70,9 +70,9 @@ def collate_fn(batch):
 def main():
     # 設定
     model_name = "Salesforce/codet5-base"
-    model_path = "./saved_models_api_codet5"  # ファインチューニング済みモデルのパス
+    model_path = "./saved_models_api_codet5_90_headAPIMethod"  # ファインチューニング済みモデルのパス
     test_file = "../../../all_data/api_seq_data/codet5_data/codet5_format_data/refine/small/test.buggy-fixed.buggy"  # テストデータ
-    output_file = "./codet5_tail_prediction.txt"  # 結果を保存するファイル
+    output_file = "./codet5_tail_prediction_90.txt"  # 結果を保存するファイル
     max_length = 256
     test_batch_size = 32
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")

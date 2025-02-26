@@ -69,7 +69,7 @@ def analyze_data(file1_data, file2_data, file3_dict, output_dir):
             api_info = file3_dict.get(api)
             if api_info:
                 total_count += 1
-                if api_info['id'] <= 46:    # 46で上位30%, 212で上位50%
+                if api_info['id'] <= 11439:    # 46で上位30%, 212で上位50%, 964で上位70%, 11439で上位90%
                     head_count += 1
 
         if total_count > 0:
@@ -79,14 +79,16 @@ def analyze_data(file1_data, file2_data, file3_dict, output_dir):
                 "target": 0 if head_ratio >= 100 else 1,
                 "func": entry["func"],
             })
+        else:
+            head_ratio = 0
+            results.append((api_sequence, head_ratio))
+            new_test_data.append({
+                "target": 0 if head_ratio >= 100 else 1,
+                "func": entry["func"],
+            })
 
-    # Output results
-    for seq, ratio in results[:30]:  # Limit to 30 entries
-        print(f"API Sequence: {seq}, Head Ratio: {ratio}%")
-    
     # Ensure output directory exists
     os.makedirs(output_dir, exist_ok=True)
-    
     # Save new testing data
     output_file = os.path.join(output_dir, "test.jsonl")
     with open(output_file, "w") as f:
@@ -99,13 +101,12 @@ def main():
     parser.add_argument('--file1', type=str, default='../../../all_data/api_seq_data/codet5_data/codet5_format_data/refine/small/test.buggy-fixed.fixed')
     parser.add_argument('--file2', type=str, default='../../../all_data/RQ4_data/api_data/test.jsonl')
     parser.add_argument('--file3', type=str, default='../../../RQ1_and_LTAnalyzer/api_rec_data.json')
-    parser.add_argument('--output_dir', type=str, default='../../../all_data/RQ4_data/api_data_30_headAPIMethod')
+    parser.add_argument('--output_dir', type=str, default='../../../all_data/RQ4_data/api_data_90_headAPIMethod')
     args = parser.parse_args()
 
     file1_data = process_file1(args.file1)
     file2_data = process_file2(args.file2)
     file3_dict = process_file3(args.file3)
-
     analyze_data(file1_data, file2_data, file3_dict, args.output_dir)
 
 if __name__ == '__main__':

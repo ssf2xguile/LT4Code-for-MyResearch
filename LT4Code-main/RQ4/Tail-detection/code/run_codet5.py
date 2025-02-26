@@ -66,8 +66,8 @@ def collate_fn(batch):
 def main():
     # 設定
     model_name = "Salesforce/codet5-base"
-    train_file = "../../../all_data/RQ4_data/api_data/train.jsonl"  # ファインチューニング用データ
-    output_dir = "./saved_models_api_codet5"
+    train_file = "../../../all_data/RQ4_data/api_data_90_headAPIMethod/train.jsonl"  # ファインチューニング用データ
+    output_dir = "./saved_models_api_codet5_90_headAPIMethod"
     max_length = 256
     train_batch_size = 32
     num_epochs = 5

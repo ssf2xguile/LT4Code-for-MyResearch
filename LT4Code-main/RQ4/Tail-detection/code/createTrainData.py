@@ -69,7 +69,7 @@ def analyze_data(file1_data, file2_data, file3_dict, output_dir):
             api_info = file3_dict.get(api)
             if api_info:
                 total_count += 1
-                if api_info['id'] <= 46:    # 46で上位30%, 212で上位50%
+                if api_info['id'] <= 11439:    # 46で上位30%, 212で上位50%, 964で上位70%, 11439で上位90%
                     head_count += 1
 
         if total_count > 0:
@@ -80,10 +80,6 @@ def analyze_data(file1_data, file2_data, file3_dict, output_dir):
                 "func": entry["func"],
             })
 
-    # Output results
-    for seq, ratio in results[:30]:  # Limit to 30 entries
-        print(f"API Sequence: {seq}, Head Ratio: {ratio}%")
-    
     # Ensure output directory exists
     os.makedirs(output_dir, exist_ok=True)
     
@@ -99,7 +95,7 @@ def main():
     parser.add_argument('--file1', type=str, default='../../../all_data/api_seq_data/codet5_data/codet5_format_data/refine/small/train.buggy-fixed.fixed')
     parser.add_argument('--file2', type=str, default='../../../all_data/RQ4_data/api_data/train.jsonl')
     parser.add_argument('--file3', type=str, default='../../../RQ1_and_LTAnalyzer/api_rec_data.json')
-    parser.add_argument('--output_dir', type=str, default='../../../all_data/RQ4_data/api_data_30_headAPIMethod')
+    parser.add_argument('--output_dir', type=str, default='../../../all_data/RQ4_data/api_data_90_headAPIMethod')
     args = parser.parse_args()
 
     file1_data = process_file1(args.file1)

@@ -62,8 +62,8 @@ def collate_fn(batch):
 def main():
     # 設定
     model_name = "Salesforce/codet5-base"
-    model_path = "./saved_models_api_codet5"  # ファインチューニング済みモデルのパス
-    test_file = "../../../all_data/RQ4_data/api_data/test.jsonl"  # テストデータ
+    model_path = "./saved_models_api_codet5_90_headAPIMethod"  # ファインチューニング済みモデルのパス
+    test_file = "../../../all_data/RQ4_data/api_data_90_headAPIMethod/test.jsonl"  # テストデータ
     max_length = 256
     test_batch_size = 32
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
